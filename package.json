@@ -1,0 +1,12 @@
+{
+  "name": "git-tally",
+  "version": "0.1.0",
+  "main": "index.js",
+  "dependencies": {
+    "cli-table": "^0.3.1",
+    "colors": "^1.1.2",
+    "commander": "^2.13.0",
+    "lodash": "^4.17.4",
+    "promise": "^8.0.1"
+  }
+}
