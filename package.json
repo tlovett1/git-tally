@@ -8,5 +8,8 @@
     "commander": "^2.13.0",
     "lodash": "^4.17.4",
     "promise": "^8.0.1"
+  },
+  "bin": {
+    "git-tally": "./index.js"
   }
 }
