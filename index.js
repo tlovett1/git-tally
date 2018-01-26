@@ -9,7 +9,7 @@ const Table = require('cli-table');
 const _ = require('lodash');
 
 program
-  .version('0.1.0')
+  .version('1.0.0')
   .option('--require-email', 'Only tally commits associated with emails.');
 
 program.parse(process.argv);
