@@ -12,15 +12,6 @@ program
 
 program.parse(process.argv);
 
-/*
-try {
-  var test = child_process.spawnSync('git help', { stdio: 'ignore' });
-  //console.log(test);
-} catch (err) {
-  console.log('Git not available.')
-  process.exit(1);
-}*/
-
 const testGitPromise = new Promise((resolve, reject) => {
   const testGit = child_process.spawn('git', ['status']);
 
@@ -89,8 +80,8 @@ testGitPromise.then(() => {
         };
       }
 
-      if (latestCommit > tally[key].latestCommit) {
-        tally[key].latestCommit = latestCommit;
+      if (date > tally[key].latestCommit) {
+        tally[key].latestCommit = date;
       }
 
       lines.shift();
@@ -117,9 +108,32 @@ testGitPromise.then(() => {
       head: ['Name', 'Email', 'Added', 'Removed', 'Latest Commit']
     });
 
+    let orderedTally = [];
+
+    /**
+     * Sort
+     */
     for (author in tally) {
-      table.push(_.values(tally[author]));
+      let inserted = false;
+
+      for (let i = 0; i < orderedTally.length; i++) {
+        if (tally[author].added + tally[author].removed >= orderedTally[i].added + orderedTally[i].removed) {
+          orderedTally.splice(i, 0, tally[author]);
+          inserted = true;
+          break;
+        }
+      }
+
+      if (!inserted) {
+        orderedTally.push(tally[author]);
+      }
     }
+
+    orderedTally.forEach((author) => {
+      let date = new Date(author.latestCommit * 1000);
+      author.latestCommit = date.toString();
+      table.push(_.values(author));
+    });
 
     console.log(table.toString());
   });
