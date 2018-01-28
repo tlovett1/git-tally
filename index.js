@@ -12,7 +12,7 @@ const json2csv = require('json2csv');
 program
   .version('1.0.0')
   .option('--require-email', 'Only tally commits associated with emails.')
-  .option('--csv-output', 'Save data to csv file. output.csv by default.');
+  .option('--csv-output [value]', 'Save data to csv file. output.csv by default.');
 
 program.parse(process.argv);
 
@@ -143,6 +143,8 @@ testGitPromise.then(() => {
 
     if (program.csvOutput) {
       const csv = json2csv({ data: orderedTally, fields: ['name', 'email'] });
+
+      console.log(program.csvOutput);
 
       if (true === program.csvOutput) {
         program.csvOutput = 'output.csv'
