@@ -7,10 +7,12 @@ const colors = require('colors');
 const Promise = require('promise');
 const Table = require('cli-table');
 const _ = require('lodash');
+const json2csv = require('json2csv');
 
 program
   .version('1.0.0')
-  .option('--require-email', 'Only tally commits associated with emails.');
+  .option('--require-email', 'Only tally commits associated with emails.')
+  .option('--csv-output', 'Save data to csv file. output.csv by default.');
 
 program.parse(process.argv);
 
@@ -138,6 +140,22 @@ testGitPromise.then(() => {
     });
 
     console.log(table.toString());
+
+    if (program.csvOutput) {
+      const csv = json2csv({ data: orderedTally, fields: ['name', 'email'] });
+
+      if (true === program.csvOutput) {
+        program.csvOutput = 'output.csv'
+      }
+
+      fs.writeFile(program.csvOutput, csv, function(err) {
+        if (err) {
+          throw err;
+        }
+
+        console.log(('csv saved to ' + program.csvOutput).green);
+      });
+    }
   });
 });
 
