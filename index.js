@@ -12,6 +12,7 @@ const json2csv = require('json2csv');
 program
   .version('1.0.0')
   .option('--email-only', 'Only output email')
+  .option('--asc', 'Show results in ascending order')
   .option('--csv-output [value]', 'Save data to csv file. output.csv by default.');
 
 program.parse(process.argv);
@@ -127,6 +128,10 @@ testGitPromise.then(() => {
       if (!inserted) {
         orderedTally.push(tally[author]);
       }
+    }
+
+    if (program.asc) {
+      orderedTally = orderedTally.reverse();
     }
 
     if (program.emailOnly) {
