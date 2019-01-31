@@ -11,7 +11,7 @@ const json2csv = require('json2csv');
 
 program
   .version('1.0.0')
-  .option('--require-email', 'Only tally commits associated with emails.')
+  .option('--email-only', 'Only output email')
   .option('--csv-output [value]', 'Save data to csv file. output.csv by default.');
 
 program.parse(process.argv);
@@ -108,10 +108,6 @@ testGitPromise.then(() => {
       process.exit(1);
     }
 
-    const table = new Table({
-      head: ['Name', 'Email', 'Added', 'Removed', 'Latest Commit']
-    });
-
     let orderedTally = [];
 
     /**
@@ -133,15 +129,31 @@ testGitPromise.then(() => {
       }
     }
 
-    orderedTally.forEach((author) => {
-      let date = new Date(author.latestCommit * 1000);
-      author.latestCommit = date.toString();
-      table.push(_.values(author));
-    });
+    if (program.emailOnly) {
+      orderedTally.forEach((author) => {
+        console.log(author.email);
+      });
+    } else {
+      const table = new Table({
+        head: ['Name', 'Email', 'Added', 'Removed', 'Latest Commit']
+      });
 
-    console.log(table.toString());
+      orderedTally.forEach((author) => {
+        let date = new Date(author.latestCommit * 1000);
+        author.latestCommit = date.toString();
+        table.push(_.values(author));
+      });
+
+      console.log(table.toString());
+    }
 
     if (program.csvOutput) {
+      let fields = ['name', 'email'];
+
+      if (program.emailOnly) {
+        fields = ['email'];
+      }
+
       const csv = json2csv({ data: orderedTally, fields: ['name', 'email'] });
 
       console.log(program.csvOutput);
