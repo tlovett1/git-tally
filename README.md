@@ -18,7 +18,7 @@ cd my-repo
 
 Next run the command:
 ```
-git-tally
+git-tally [path-or-github-repo]
 ```
 
 You will see a table like this:
