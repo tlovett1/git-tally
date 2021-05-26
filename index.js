@@ -10,7 +10,6 @@ const json2csv = require('json2csv');
 
 const testGitPromise = (pathOrGit) => {
   return new Promise((resolve, reject) => {
-    console.log(pathOrGit);
     const testGit = child_process.spawn('git', ['status'], { cwd: pathOrGit });
 
     testGit.on('error', (code) => {
