@@ -10,7 +10,13 @@ const json2csv = require('json2csv');
 
 const testGitPromise = (pathOrGit) => {
   return new Promise((resolve, reject) => {
+    console.log(pathOrGit);
     const testGit = child_process.spawn('git', ['status'], { cwd: pathOrGit });
+
+    testGit.on('error', (code) => {
+      console.log('Not a git repository.'.red);
+      process.exit(1);
+    });
 
     testGit.on('close', (code) => {
       if (0 !== code) {
@@ -23,11 +29,11 @@ const testGitPromise = (pathOrGit) => {
   });
 }
 
-const statsPromise = () => {
+const statsPromise = (pathOrGit) => {
   return new Promise((resolve, reject) => {
     let statsString = '';
 
-    const stats = child_process.spawn('git', ['log', '--numstat', '--pretty=format:@@@COMMIT@@@<%an> <%ae> <%at>@', '--no-merges']);
+    const stats = child_process.spawn('git', ['log', '--numstat', '--pretty=format:@@@COMMIT@@@<%an> <%ae> <%at>@', '--no-merges'], { cwd: pathOrGit });
 
     stats.stdout.on('data', (data) => {
       statsString += data.toString();
@@ -39,7 +45,7 @@ const statsPromise = () => {
 
     stats.on('close', (code) => {
       if (0 !== code) {
-        console.log('Git stats failed');
+        console.log('Git stats failed'.red);
         process.exit(1);
       }
 
@@ -56,7 +62,7 @@ const cloneToTemp = (address) => {
 
     clone.on('close', (code) => {
       if (0 !== code) {
-        console.log('Git clone failed');
+        console.log('Git clone failed'.red);
         process.exit(1);
       }
 
@@ -80,7 +86,7 @@ const run = async (pathOrGitHub, options) => {
     workingDir = pathOrGitHub;
   }
 
-  if (workingDir.match(/(http:|git@github)/i)) {
+  if (workingDir.match(/(https?:|git@github)/i)) {
     workingDir = './' + await cloneToTemp(workingDir);
   }
 
@@ -88,7 +94,7 @@ const run = async (pathOrGitHub, options) => {
 
   await testGitPromise(workingDir);
 
-  let statsString = await statsPromise();
+  let statsString = await statsPromise(workingDir);
   const tally = {};
 
   const commits = statsString.split('@@@COMMIT@@');
